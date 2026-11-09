@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06231f">
+<title>Шкала Гамера</title>
+<style>
+:root{--bg:#06231f;--card:#0d342d;--ink:#e9fbf6;--dim:#8fb8ad;--led:#2de2d0;--lem:#e8f04a;--line:#1c5148;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(ellipse at 50% 0,#0e4a40,var(--bg) 60%) fixed;color:var(--ink);font:16px/1.45 "Trebuchet MS","Segoe UI",system-ui,sans-serif;min-height:100vh}
+main{max-width:520px;margin:0 auto;padding:12px 16px 96px;position:relative;z-index:1}
+h1{font-size:28px;margin:10px 0 4px;font-family:"Arial Rounded MT Bold","Trebuchet MS",sans-serif}h2{font-size:19px;margin:14px 0 6px}
+p{margin:6px 0}.dim{color:var(--dim);font-size:14px}
+.card{background:#0d342dcc;border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;backdrop-filter:blur(4px)}
+button{font:inherit;color:#04211c;background:var(--led);border:0;border-radius:14px;padding:12px 16px;font-weight:700;cursor:pointer;box-shadow:0 0 14px #2de2d055;transition:transform .1s}
+button:active{transform:scale(.95)}
+button.alt{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+button.sm{padding:6px 10px;font-size:14px;border-radius:10px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--lem);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>button{flex:1;min-width:100px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;background:#041a17;border-top:1px solid var(--led);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;color:var(--dim);box-shadow:none;padding:6px 2px;font-size:11px;line-height:1.2}
+nav button b{display:block;font-size:20px}nav button.on{color:var(--led)}
+.hd{display:flex;align-items:center;gap:10px}
+.av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;background:#04211c;border:2px solid var(--led);flex:none}
+.av.s{width:38px;height:38px;font-size:21px}
+.bar{height:10px;background:#04211c;border-radius:6px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--led),var(--lem));transition:width .6s}
+.rank{text-align:center;padding:16px 10px}
+.rank .nm{font-size:30px;font-weight:800;color:var(--c);font-family:"Arial Rounded MT Bold","Trebuchet MS",sans-serif}
+.rank svg{filter:drop-shadow(0 0 12px var(--c))}.lq{transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.lv{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.lv:last-child{border:0}.lv .em{font-size:28px}.lv.off{opacity:.5}
+.lv label{flex:1}.lv input{width:24px;height:24px;accent-color:#2de2d0}
+.opts{display:grid;gap:8px;margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pick{grid-template-columns:repeat(5,1fr)}
+.cell{aspect-ratio:1;font-size:30px;background:var(--card);border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+.cell.up,.cell.sel{background:#103f36;border-color:var(--led)}
+.tap{width:190px;height:190px;border-radius:50%;margin:14px auto;display:flex;align-items:center;justify-content:center;font-size:70px;background:radial-gradient(circle,#1c6e60,#0d342d);border:3px solid var(--led);box-shadow:0 0 30px #2de2d088;user-select:none;cursor:pointer;touch-action:manipulation}
+.arena{position:relative;height:340px;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#04211c}
+.fall{position:absolute;top:-44px;font-size:40px;cursor:pointer;user-select:none;animation:fall linear forwards}
+@keyframes fall{to{top:100%}}
+.bt{font-size:120px;text-align:center;transition:transform 2.4s cubic-bezier(.1,.7,.2,1)}
+input[type=number],input[type=text]{font:inherit;width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#04211c;color:var(--ink)}
+.toast{position:fixed;left:16px;right:16px;top:calc(12px + env(safe-area-inset-top,0px));background:var(--lem);color:#222;border-radius:12px;padding:12px;font-weight:700;text-align:center;z-index:9}
+.bb{position:fixed;bottom:-60px;border-radius:50%;border:1px solid #2de2d044;animation:rise linear infinite;pointer-events:none;z-index:0}
+@keyframes rise{to{transform:translateY(-120vh)}}
+.msgs{height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:4px}
+.m{max-width:80%;padding:8px 12px;border-radius:14px;background:#04211c;align-self:flex-start;word-break:break-word}
+.m.me{align-self:flex-end;background:#12695d}
+.fr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.fr:last-child{border:0}.fr>div:nth-child(2){flex:1;min-width:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.bb{display:none}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav id="nav"></nav>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+var L=[
+{n:"Кюмющ 1",e:"💧",c:"#7fd8ff",d:"Поцелуи, объятия, прогулки за руку",q:["Вы целовались и обнимались?","Вы гуляли, держась за руки?"]},
+{n:"Кола",e:"🥤",c:"#d99a6c",d:"Ласки через одежду",q:["Были ласки через одежду?","Были объятия с более близким контактом?"]},
+{n:"Тропик манго",e:"🥭",c:"#ffb74a",d:"Ручные ласки, в одну сторону",q:["Один из вас доставлял удовольствие другому рукой?","Это было не один раз?"]},
+{n:"Тархун",e:"🍃",c:"#5fe08a",d:"То же самое, но взаимно",q:["Такие ласки были у вас взаимными?","Это было больше одного раза?"]},
+{n:"Пыртыкал",e:"🍊",c:"#ff9a2e",d:"Близость без одежды",q:["Вы были близки без одежды?","Вы засыпали или просыпались вместе?"]},
+{n:"Кюмющ 2",e:"🫧",c:"#9fe3ff",d:"Первый раз",q:["Это был первый раз для одного из вас?","Вы всё обсудили заранее и оба были согласны?"]},
+{n:"Толкун 1",e:"🌊",c:"#4aa8ff",d:"Незавершённая близость",q:["Была близость, не доведённая до конца?","Это повторялось?"]},
+{n:"Толкун 2",e:"🏔️",c:"#3d7bff",d:"Завершённая близость",q:["Была завершённая близость?","Это было больше одного раза?"]},
+{n:"Лимонад",e:"🍋",c:"#e8f04a",d:"Каждый день",q:["Бывали периоды близости почти каждый день?","Такой ритм держался неделю и дольше?"]},
+{n:"Толкун Нар",e:"🔥",c:"#ff5d73",d:"Костюмы, игрушки, ролевые игры",q:["Вы пробовали ролевые игры или костюмы?","Вы пробовали игрушки или другие эксперименты?"]}
+];
+var A=["Нет","Было","Регулярно"],AV=["😎","🤪","🥳","🦊","🐸","🐼","🦄","👽","🤖","🧃","🥤","🍋","🥭","🍊","🔥","🐙","🦖","🧌","🐧","🥶"];
+var DARES=["Скажи «Толкун» голосом уставшего робота","Станцуй танец баклашки, которую забыли в холодильнике","Изобрази, как газировка выходит из бутылки, без слов","Назови 3 вещи, которые в жизни бодрят лучше колы","Пропой название любого напитка как оперную арию","Сделай лицо человека, который выпил лимонад без сахара","Поговори 30 секунд как диктор рекламы «Пыртыкала»","Придумай новый вкус газировки и расскажи о нём серьёзно","Покажи, как шипит открытая бутылка, всем телом"];
+var WHO=["Толкун: тебя все любят, но газ выходит в самый неподходящий момент","Кола: бодрый, шумный, после тебя хочется почистить зубы","Лимонад: кислый с виду, но душа сладкая","Тархун: странный, зелёный, и почему-то все уважают","Кюмющ: тихий, чистый, на вечеринке стоишь у стенки","Тропик манго: приехал в отпуск и забыл уехать","Пыртыкал: яркий, и вечно рядом кто-то липкий","Нар: красный, острый, лучше не трогать на первом свидании"];
+var S={tab:"test",qi:-1,ans:[],g:null,chat:null},D={ok:0,test:null,cur:[],me:{nick:"Игрок"+(100+Math.floor(Math.random()*900)),av:"😎",vis:0,sr:0}},GT=[],bid=0;
+try{var raw=JSON.parse(localStorage.getItem("br")||"{}");D=Object.assign(D,raw);D.me=Object.assign({nick:D.me.nick,av:"😎",vis:0,sr:0},raw.me||{})}catch(e){}
+if(!D.cur||D.cur.length!==10)D.cur=L.map(function(){return 0});
+function save(){try{localStorage.setItem("br",JSON.stringify(D))}catch(e){}sync()}
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function clr(){GT.forEach(clearInterval);GT=[]}
+function calc(p){var r=-1,miss=0;for(var i=0;i<10;i++){if(p[i]>=2){r=i;miss=0}else{miss++;if(miss>=2)break}}
+ var odd=false;for(var j=r+1;j<10;j++)if(p[j]>=2)odd=true;
+ return{r:r,odd:odd,nx:r+1<10?Math.round(Math.min(p[r+1],4)/4*100):100,total:p.reduce(function(a,b){return a+b},0)}}
+function pts(a){return L.map(function(_,i){return(a[i*2]||0)+(a[i*2+1]||0)})}
+function curP(){return D.cur.map(function(v){return v?4:0})}
+function peak(){return D.test?calc(D.test.p).r:-1}
+function toast(t){var d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
+function bottle(r,c){var id="q"+(++bid),f=(r+1)/10;
+ return`<svg width="96" height="150" viewBox="0 0 80 160"><defs><clipPath id="${id}"><path d="M30 14h20v12c0 8 18 14 18 34v82a10 10 0 0 1-10 10H22a10 10 0 0 1-10-10V60c0-20 18-26 18-34z"/></clipPath></defs><rect x="30" y="2" width="20" height="12" rx="3" fill="${c}"/><g clip-path="url(#${id})"><rect width="80" height="160" fill="#04211c"/><rect class="lq" data-y="${150-132*f}" y="0" width="80" height="160" fill="${c}" style="transform:translateY(160px)"/></g><path d="M30 14h20v12c0 8 18 14 18 34v82a10 10 0 0 1-10 10H22a10 10 0 0 1-10-10V60c0-20 18-26 18-34z" fill="none" stroke="#e9fbf6" stroke-width="2.5"/></svg>`}
+function pour(){requestAnimationFrame(function(){requestAnimationFrame(function(){Array.prototype.forEach.call(document.querySelectorAll(".lq"),function(e){e.style.transform="translateY("+e.dataset.y+"px)"})})})}
+function rankCard(r,title,sub){
+ if(r<0)return`<div class="card rank" style="--c:#8fb8ad">${bottle(-1,"#8fb8ad")}<div class="nm">Без ранга</div><p class="dim">${title}</p></div>`;
+ var x=L[r];return`<div class="card rank" style="--c:${x.c}"><p class="dim">${title}</p>${bottle(r,x.c)}<div class="nm">${x.e} ${x.n}</div><p class="dim">${x.d}</p>${sub||""}</div>`}
+function head(){return`<div class="hd"><div class="av">${D.me.av}</div><div><b>${esc(D.me.nick)}</b><div class="dim">${peak()<0?"без ранга":"ранг: "+L[peak()].n}</div></div></div>`}
+function nav(){var t=[["test","📝","Тест"],["now","📈","Сейчас"],["games","🎮","Игры"],["friends","💬","Друзья"],["me","👤","Профиль"]];
+ $("nav").innerHTML=t.map(function(a){return`<button class="${S.tab===a[0]?"on":""}" data-t="${a[0]}"><b>${a[1]}</b>${a[2]}</button>`}).join("");
+ Array.prototype.forEach.call($("nav").children,function(b){b.onclick=function(){S.tab=b.dataset.t;S.g=null;S.chat=null;render()}})}
+function render(){clr();unchat();
+ if(!D.ok){$("nav").style.display="none";$("app").innerHTML=`<h1>🎮 Шкала Гамера</h1><div class="card"><p>Приложение про личные отношения для взрослых. Ответы хранятся на этом телефоне. В сеть уходит только то, что ты сам включишь в профиле.</p><p>Тебе есть 18 лет?</p><div class="row"><button id="y">Да, мне 18+</button><button class="alt" id="n">Нет</button></div></div>`;
+  $("y").onclick=function(){D.ok=1;save();render()};$("n").onclick=function(){$("app").innerHTML='<div class="card"><p>Тогда это приложение пока не для тебя.</p></div>'};return}
+ $("nav").style.display="flex";nav();
+ var t=S.tab;if(t==="test")pageTest();else if(t==="now")pageNow();else if(t==="games")pageGames();else if(t==="friends")pageFriends();else pageMe();pour()}
+function pageTest(){
+ var h=head()+"<h1>Мой ранг</h1>";
+ if(S.qi>=0&&S.qi<20){var l=Math.floor(S.qi/2);
+  h+=`<div class="card"><div class="bar"><i style="width:${S.qi/20*100}%"></i></div><p class="dim">Вопрос ${S.qi+1} из 20</p><h2>${L[l].q[S.qi%2]}</h2><div class="opts">${A.map(function(a,i){return`<button data-a="${i}">${a}</button>`}).join("")}</div>${S.qi?'<p><button class="alt" id="bk">Назад</button></p>':""}</div>`;
+  $("app").innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-a]"),function(b){b.onclick=function(){S.ans[S.qi]=+b.dataset.a;S.qi++;if(S.qi===20)finish();else render()}});
+  if($("bk"))$("bk").onclick=function(){S.qi--;render()};return}
+ if(D.test){var c=calc(D.test.p);
+  h+=rankCard(c.r,"Пиковый ранг",`<div class="bar"><i style="width:${c.nx}%"></i></div><p class="dim">${c.r<9?"До следующего ранга: "+c.nx+"%":"Максимальный ранг"} · счёт ${c.total}/40</p>`)+(c.odd?'<div class="card"><p>Ответы местами противоречат друг другу: высокие уровни отмечены при пропусках ниже. Проверь их ещё раз.</p></div>':"")}
+ else h+=rankCard(-1,"Пройди тест из 20 вопросов");
+ h+=`<div class="row"><button id="st">${D.test?"Пройти заново":"Начать тест"}</button></div><h2>Все ранги</h2><div class="card">${L.map(function(x,i){return`<div class="lv"><span class="em">${x.e}</span><label><b style="color:${x.c}">${i+1}. ${x.n}</b><br><span class="dim">${x.d}</span></label></div>`}).join("")}</div>`;
+ $("app").innerHTML=h;$("st").onclick=function(){S.qi=0;S.ans=[];render()}}
+function finish(){var p=pts(S.ans);D.test={p:p};var c=calc(p);
+ for(var i=0;i<10;i++)if(i<=c.r&&p[i]>=2)D.cur[i]=1;
+ save();S.qi=-1;render()}
+function pageNow(){
+ var c=calc(curP()),n=D.cur.reduce(function(a,b){return a+b},0);
+ var h=head()+"<h1>Сейчас</h1><p class=dim>Отмечай этапы, которые прошли вы с нынешним партнёром. Ранг растёт вместе с вами.</p>"+rankCard(c.r,"Ранг в текущих отношениях",`<div class="bar"><i style="width:${n*10}%"></i></div><p class="dim">${n} из 10 этапов</p>`);
+ h+=`<div class="card">${L.map(function(x,i){return`<div class="lv${D.cur[i]?"":" off"}"><span class="em">${x.e}</span><label for="c${i}"><b style="color:${x.c}">${x.n}</b><br><span class="dim">${x.d}</span></label><input type="checkbox" id="c${i}" ${D.cur[i]?"checked":""}></div>`}).join("")}</div><button class="alt" id="rs">Начать с новым партнёром</button>`;
+ $("app").innerHTML=h;
+ L.forEach(function(x,i){$("c"+i).onchange=function(){var old=calc(curP()).r;D.cur[i]=this.checked?1:0;save();
+  var nw=calc(curP()).r;if(nw>old)toast("Новый ранг: "+L[nw].e+" "+L[nw].n+"!");render()}});
+ $("rs").onclick=function(){if(confirm("Сбросить текущие этапы? Пиковый ранг сохранится.")){D.cur=L.map(function(){return 0});save();render()}}}
+/* ---------- профиль ---------- */
+function pageMe(){var m=D.me;
+ $("app").innerHTML=`<h1>Профиль</h1><div class="card"><div class="hd"><div class="av" id="pv">${m.av}</div><div style="flex:1"><input type="text" id="nk" maxlength="16" value="${esc(m.nick)}" aria-label="Никнейм"></div></div><h2>Аватарка</h2><div class="grid pick">${AV.map(function(a){return`<div class="cell${a===m.av?" sel":""}" data-av="${a}">${a}</div>`}).join("")}</div></div>
+ <div class="card"><h2>Онлайн</h2><div class="lv"><label for="vs">Показывать меня в поиске друзей</label><input type="checkbox" id="vs" ${m.vis?"checked":""}></div><div class="lv"><label for="sr">Показывать друзьям мои ранги</label><input type="checkbox" id="sr" ${m.sr?"checked":""}></div><p class="dim">Ранги по умолчанию скрыты. Переписку видят только двое участников чата.</p></div><button id="sv">Сохранить</button>`;
+ var av=m.av;Array.prototype.forEach.call(document.querySelectorAll("[data-av]"),function(c){c.onclick=function(){av=c.dataset.av;$("pv").textContent=av;Array.prototype.forEach.call(document.querySelectorAll("[data-av]"),function(x){x.classList.toggle("sel",x===c)})}});
+ $("sv").onclick=function(){D.me.nick=($("nk").value.trim()||"Игрок").slice(0,16);D.me.av=av;D.me.vis=$("vs").checked?1:0;D.me.sr=$("sr").checked?1:0;save();toast("Сохранено");render()}}
+/* ---------- онлайн (Firebase) ---------- */
+var net={on:false,db:null,uid:null,pubs:{},fr:[],unsub:null,cu:[]};
+function initNet(){try{
+ if(typeof firebase==="undefined"||!window.FB_CONFIG||String(FB_CONFIG.apiKey).indexOf("ВСТАВЬ")===0)return;
+ firebase.initializeApp(FB_CONFIG);
+ firebase.auth().signInAnonymously().then(function(c){net.uid=c.user.uid;net.db=firebase.firestore();return net.db.doc("users/"+net.uid).get()}).then(function(f){
+  net.fr=f.exists?(f.data().ids||[]):[];
+  net.unsub=net.db.collection("profiles").limit(500).onSnapshot(function(s){net.pubs={};s.docs.forEach(function(d){net.pubs[d.id]=d.data()});net.on=true;if(S.tab==="friends"&&!S.chat)fillFriends()});
+  net.on=true;sync();if(S.tab==="friends"&&!S.chat)render()}).catch(function(){})}catch(e){}}
+function sync(){if(!net.on||!net.db)return;var m=D.me;net.db.doc("profiles/"+net.uid).set({nick:m.nick,av:m.av,vis:m.vis,pk:m.sr?peak():null,cu:m.sr?calc(curP()).r:null,t:Date.now()}).catch(function(){})}
+function saveFr(){net.db.doc("users/"+net.uid).set({ids:net.fr}).catch(function(){})}
+function rk(r){return r==null?"скрыт":r<0?"без ранга":L[r].e+" "+L[r].n}
+function pageFriends(){
+ if(S.chat)return pageChat();
+ if(!net.on){$("app").innerHTML=head()+`<h1>Друзья</h1><div class="card"><p>Нет связи с сервером. Проверь интернет. Если ты разработчик, проверь файл firebase-config.js.</p></div>`;return}
+ $("app").innerHTML=head()+`<h1>Друзья</h1><div class="card" id="fl"></div><h2>Найти игроков</h2><input type="text" id="sq" placeholder="Поиск по нику" maxlength="16"><div class="card" id="fs"></div>`;
+ $("sq").oninput=fillFriends;fillFriends();
+ $("app").onclick=function(e){var b=e.target.closest("[data-act]");if(!b)return;var id=b.dataset.id,a=b.dataset.act;
+  if(a==="add"&&net.fr.indexOf(id)<0){net.fr.push(id);saveFr();fillFriends()}
+  else if(a==="del"){net.fr=net.fr.filter(function(x){return x!==id});saveFr();fillFriends()}
+  else if(a==="chat"){S.chat=id;render()}}}
+function frRow(id,p,fr){return`<div class="fr"><div class="av s">${esc(p.av||"🥤")}</div><div><b>${esc(p.nick||"Игрок")}</b><div class="dim">пик: ${rk(p.pk)} · сейчас: ${rk(p.cu)}</div></div>${fr?`<button class="sm" data-act="chat" data-id="${id}">Написать</button><button class="sm alt" data-act="del" data-id="${id}">✕</button>`:`<button class="sm" data-act="add" data-id="${id}">+ Добавить</button>`}</div>`}
+function fillFriends(){if(!$("fl"))return;var q=($("sq")?$("sq").value:"").toLowerCase();
+ $("fl").innerHTML=net.fr.length?net.fr.map(function(id){return frRow(id,net.pubs[id]||{},true)}).join(""):'<p class="dim">Пока никого. Найди игроков ниже.</p>';
+ var ids=Object.keys(net.pubs).filter(function(id){var p=net.pubs[id];return id!==net.uid&&p.vis&&net.fr.indexOf(id)<0&&(!q||String(p.nick).toLowerCase().indexOf(q)>=0)});
+ $("fs").innerHTML=ids.length?ids.map(function(id){return frRow(id,net.pubs[id],false)}).join(""):'<p class="dim">Никого не нашли. Игроки появляются здесь, когда включат показ в профиле.</p>'}
+function unchat(){net.cu.forEach(function(f){f()});net.cu=[]}
+function pageChat(){var id=S.chat,p=net.pubs[id]||{},cid=[net.uid,id].sort().join("_"),msgs=[];
+ $("app").innerHTML=`<div class="hd"><button class="alt sm" id="bk">←</button><div class="av s">${esc(p.av||"🥤")}</div><b>${esc(p.nick||"Игрок")}</b></div><div class="card"><div class="msgs" id="ml"></div></div><div class="row"><input type="text" id="mt" maxlength="300" placeholder="Сообщение" style="flex:1"><button id="ms" style="flex:none">➤</button></div><p class="dim">Переписку видите только вы двое.</p>`;
+ $("bk").onclick=function(){S.chat=null;render()};
+ function draw(){if(!$("ml"))return;msgs.sort(function(x,y){return x.t-y.t});$("ml").innerHTML=msgs.length?msgs.map(function(m){return`<div class="m${m.from===net.uid?" me":""}">${esc(m.text)}</div>`}).join(""):'<p class="dim">Напиши первым.</p>';$("ml").scrollTop=1e6}
+ net.cu.push(net.db.collection("chats/"+cid+"/msgs").onSnapshot(function(s){msgs=s.docs.map(function(d){return d.data()});draw()},function(){}));
+ function send(){var v=$("mt").value.trim();if(!v)return;$("mt").value="";net.db.collection("chats/"+cid+"/msgs").add({from:net.uid,to:id,text:v,t:Date.now()}).catch(function(){toast("Не отправилось")})}
+ $("ms").onclick=send;$("mt").onkeydown=function(e){if(e.key==="Enter")send()}}
+/* ---------- игры ---------- */
+function pageGames(){
+ var g=S.g;if(g==="mem")return gMem();if(g==="tap")return gTap();if(g==="num")return gNum();if(g==="catch")return gCatch();if(g==="spin")return gSpin();if(g==="who")return gWho();
+ var G=[["catch","🧦","Ловец баклашек","Лови напитки, носки не трогай"],["spin","🍾","Бутылочка-рулетка","Крути и выполняй смешное задание"],["who","🔮","Какой ты напиток","Честный и обидный вердикт"],["mem","🧠","Мемори","Пары напитков за минимум ходов"],["tap","👆","Тапалка","Сколько тапов за 10 секунд"],["num","🎯","Угадай число","От 1 до 100, семь попыток"]];
+ $("app").innerHTML=head()+"<h1>Игры</h1>"+G.map(function(x){return`<div class="card"><div class="fr"><div class="av">${x[1]}</div><div><b>${x[2]}</b><div class="dim">${x[3]}</div></div><button class="sm" data-g="${x[0]}">Играть</button></div></div>`}).join("");
+ Array.prototype.forEach.call(document.querySelectorAll("[data-g]"),function(b){b.onclick=function(){S.g=b.dataset.g;render()}})}
+function back(){return'<p><button class="alt" id="gb">← К играм</button></p>'}
+function bindBack(){$("gb").onclick=function(){S.g=null;render()}}
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+function gCatch(){var sc=0,t=30,over=false;
+ $("app").innerHTML=`<h1>Ловец баклашек</h1><p class="dim" id="i"></p><div class="arena" id="ar"></div>`+back();bindBack();
+ function upd(){$("i").textContent="Очки: "+sc+" · осталось "+t+" с"}upd();
+ GT.push(setInterval(function(){if(over)return;var d=document.createElement("div"),bad=Math.random()<.25;d.className="fall";d.textContent=bad?"🧦":rnd(["🥤","🍋","🥭","🍊","🧃"]);d.style.left=Math.random()*82+"%";d.style.animationDuration=(1.6+Math.random()*1.4)+"s";
+  d.onpointerdown=function(){sc+=bad?-3:1;d.remove();upd()};d.onanimationend=function(){d.remove()};$("ar").appendChild(d)},450));
+ GT.push(setInterval(function(){t--;if(t<=0){over=true;clr();$("i").textContent="Итог: "+sc+" очков";toast(sc>25?"Королевская ловля!":"Носки победили");return}upd()},1000))}
+function gSpin(){var rot=0;
+ $("app").innerHTML=`<h1>Бутылочка-рулетка</h1><div class="bt" id="bt">🍾</div><div class="card"><p id="i">Крутани бутылочку и получи задание.</p></div><button id="sp">Крутить</button>`+back();bindBack();
+ $("sp").onclick=function(){rot+=900+Math.random()*900;$("bt").style.transform="rotate("+rot+"deg)";$("i").textContent="Крутится…";setTimeout(function(){if($("i"))$("i").textContent=rnd(DARES)},2400)}}
+function gWho(){$("app").innerHTML=`<h1>Какой ты напиток</h1><div class="card"><p>Сканируем характер игрока <b>${esc(D.me.nick)}</b>…</p><p id="i" style="font-size:19px"></p></div><button id="sp">Просканировать</button>`+back();bindBack();
+ $("sp").onclick=function(){$("i").textContent="…";setTimeout(function(){if($("i"))$("i").textContent=rnd(WHO)},700)}}
+function gMem(){var em=["🥤","🥭","🍃","🍊","🫧","🌊","🍋","🔥"],d=em.concat(em).sort(function(){return Math.random()-.5}),op=[],mv=0,done=0,lock=false;
+ $("app").innerHTML=`<h1>Мемори</h1><p class="dim" id="mv">Ходов: 0</p><div class="grid">${d.map(function(_,i){return`<div class="cell" data-i="${i}">❓</div>`}).join("")}</div>`+back();bindBack();
+ Array.prototype.forEach.call(document.querySelectorAll(".cell"),function(c){c.onclick=function(){var i=+c.dataset.i;if(lock||c.classList.contains("up"))return;c.textContent=d[i];c.classList.add("up");op.push(c);
+  if(op.length===2){mv++;$("mv").textContent="Ходов: "+mv;var a=op[0],b=op[1];
+   if(a.textContent===b.textContent){done++;op=[];if(done===8)toast("Готово за "+mv+" ходов!")}
+   else{lock=true;setTimeout(function(){a.textContent=b.textContent="❓";a.classList.remove("up");b.classList.remove("up");op=[];lock=false},700)}}}})}
+function gTap(){var n=0,t=0,run=false,best=0;try{best=+localStorage.getItem("brt")||0}catch(e){}
+ $("app").innerHTML=`<h1>Тапалка</h1><p class="dim" id="i">Тапни, чтобы начать. Рекорд: ${best}</p><div class="tap" id="b">🥤</div><h2 style="text-align:center" id="n">0</h2>`+back();bindBack();
+ $("b").onclick=function(){
+  if(!run&&t<=0){n=0;$("n").textContent=0;run=true;t=10;$("i").textContent="Осталось: 10 с";GT.push(setInterval(function(){t--;$("i").textContent="Осталось: "+t+" с";if(t<=0){clr();run=false;$("i").textContent="Итог: "+n+". Тапни, чтобы повторить";if(n>best){best=n;try{localStorage.setItem("brt",n)}catch(e){}toast("Новый рекорд: "+n+"!")}}},1000))}
+  if(run){n++;$("n").textContent=n}}}
+function gNum(){var x=1+Math.floor(Math.random()*100),tr=7;
+ $("app").innerHTML=`<h1>Угадай число</h1><p id="i">Я загадал число от 1 до 100. Попыток: 7</p><input type="number" id="v" min="1" max="100" inputmode="numeric"><p><button id="ok">Проверить</button></p>`+back();bindBack();
+ $("ok").onclick=function(){var v=+$("v").value;if(!v||tr<=0)return;tr--;
+  if(v===x){$("i").textContent="Верно! Это "+x+".";tr=0}
+  else if(tr===0)$("i").textContent="Не вышло. Было число "+x;
+  else $("i").textContent=(v<x?"Больше":"Меньше")+". Попыток: "+tr;$("v").value=""}}
+/* пузырьки на фоне */
+for(var k=0;k<12;k++){var b=document.createElement("div"),s=8+Math.random()*26;b.className="bb";b.style.cssText="width:"+s+"px;height:"+s+"px;left:"+Math.random()*100+"%;animation-duration:"+(9+Math.random()*12)+"s;animation-delay:-"+Math.random()*15+"s";document.body.appendChild(b)}
+render();initNet();
+</script>
+</body>
+</html>
